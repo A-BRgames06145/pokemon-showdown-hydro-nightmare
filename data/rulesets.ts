@@ -2952,7 +2952,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 		desc: "Only allows Pok&eacute;mon from the Paldea region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
-			const isPaldea = (species.num >= 906 && species.num <= 1024);
+			const isPaldea = (species.num >= 906 && species.num <= 1025);
 			if (!isPaldea && !this.ruleTable.has('+' + species.id)) {
 				return [`${species.baseSpecies} or its base form are not from Paldea`];
 			}
