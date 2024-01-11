@@ -2738,9 +2738,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 		name: 'Useless Moves Clause',
 		// implemented in /mods/moderngen1/rulesets.ts
 	},
-	kantocup: {
+	kantocupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Kanto Cup',
+		name: 'Kanto Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the kanto region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2750,9 +2750,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldjohtocup: {
+	oldjohtocupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Johto Cup',
+		name: 'Old Johto Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 2",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2762,9 +2762,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	johtocup: {
+	johtocupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Johto Cup',
+		name: 'Johto Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Johto region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2774,9 +2774,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldhoenncup: {
+	oldhoenncupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Hoenn Cup',
+		name: 'Old Hoenn Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 3",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2786,9 +2786,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	hoenncup: {
+	hoenncupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Hoenn Cup',
+		name: 'Hoenn Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Hoenn region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2798,9 +2798,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldsinnohcup: {
+	oldsinnohcupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Sinnoh Cup',
+		name: 'Old Sinnoh Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 4",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2810,9 +2810,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	sinnohcup: {
+	sinnohcupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Sinnoh Cup',
+		name: 'Sinnoh Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Sinnoh region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2822,9 +2822,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldunovacup: {
+	oldunovacupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Unova Cup',
+		name: 'Old Unova Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 5",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2834,9 +2834,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	unovacup: {
+	unovacupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Unova Cup',
+		name: 'Unova Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Unova region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2846,9 +2846,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldkaloscup: {
+	oldkaloscupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Kalos Cup',
+		name: 'Old Kalos Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 6",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2858,9 +2858,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	kaloscup: {
+	kaloscupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Kalos Cup',
+		name: 'Kalos Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Kalos region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2870,9 +2870,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldalolacup: {
+	oldalolacupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Alola Cup',
+		name: 'Old Alola Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 7",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2887,9 +2887,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	alolacup: {
+	alolacupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Alola Cup',
+		name: 'Alola Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Alola region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2899,9 +2899,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	oldgalarcup: {
+	oldgalarcupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Old Galar Cup',
+		name: 'Old Galar Cup Clause',
 		desc: "Only allows Pok&eacute;mon from gen 8",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2916,9 +2916,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	galarcup: {
+	galarcupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Galar Cup',
+		name: 'Galar Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Galar region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2933,9 +2933,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	hisuicup: {
+	hisuicupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Hisui Cup',
+		name: 'Hisui Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Hisui region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
@@ -2946,9 +2946,9 @@ export const Rulesets: {[k: string]: FormatData} = {
 			}
 		},
 	},
-	paldeacup: {
+	paldeacupclause: {
 		effectType: 'ValidatorRule',
-		name: 'Paldea Cup',
+		name: 'Paldea Cup Clause',
 		desc: "Only allows Pok&eacute;mon from the Paldea region",
 		onValidateSet(set, format) {
 			const species = this.dex.species.get(set.species || set.name);
