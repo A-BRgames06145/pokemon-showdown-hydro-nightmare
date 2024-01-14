@@ -2884,39 +2884,37 @@ export const Moves: {[k: string]: ModdedMoveData} = {
         ignoreImmunity: true,
         willCrit: false,
         basePower: 1,
-        damageCallback(pokemon, target) {
-            // Counter mechanics in gen 1:
-            // - a move is Counterable if it is Normal or Fighting type, has nonzero Base Power, and is not Counter
-            // - if Counter is used by the player, it will succeed if the opponent's last used move is Counterable
-            // - if Counter is used by the opponent, it will succeed if the player's last selected move is Counterable
-            // - (Counter will thus desync if the target's last used move is not as counterable as the target's last selected move)
-            // - if Counter succeeds it will deal twice the last move damage dealt in battle (even if it's from a different pokemon because of a switch)
-            const lastMove = target.side.lastMove && this.dex.moves.get(target.side.lastMove.id);
-            const lastMoveIsCounterable = lastMove && lastMove.basePower > 0 &&
-                ['Normal', 'Fighting'].includes(lastMove.type) && lastMove.id !== 'counter';
-            const lastSelectedMove = target.side.lastSelectedMove && this.dex.moves.get(target.side.lastSelectedMove);
-            const lastSelectedMoveIsCounterable = lastSelectedMove && lastSelectedMove.basePower > 0 &&
-                ['Normal', 'Fighting'].includes(lastSelectedMove.type) && lastSelectedMove.id !== 'counter';
-            if (!lastMoveIsCounterable && !lastSelectedMoveIsCounterable) {
-                this.debug("Gen 1 Counter: last move was not Counterable");
-                this.add('-fail', pokemon);
-                return false;
-            }
-            if (this.lastDamage <= 0) {
-                this.debug("Gen 1 Counter: no previous damage exists");
-                this.add('-fail', pokemon);
-                return false;
-            }
-            if (!lastMoveIsCounterable || !lastSelectedMoveIsCounterable) {
-                this.hint("Desync Clause Mod activated!");
-                this.add('-fail', pokemon);
-                return false;
-            }
-            return 2 * this.lastDamage;
+        damageCallback(pokemon) {
+			if (!pokemon.volatiles['counter']) return 0;
+			return pokemon.volatiles['counter'].damage || 1;
+		},
+        beforeTurnCallback(pokemon) {
+			pokemon.addVolatile('counter');
+		},
+		onTry(source) {
+			if (!source.volatiles['counter']) return false;
+			if (source.volatiles['counter'].slot === null) return false;
+		},
+		condition: {
+			duration: 1,
+			noCopy: true,
+			onStart(target, source, move) {
+				this.effectState.slot = null;
+				this.effectState.damage = 0;
+			},
+			onRedirectTargetPriority: -1,
+			onRedirectTarget(target, source, source2, move) {
+				if (move.id !== 'counter') return;
+				if (source !== this.effectState.target || !this.effectState.slot) return;
+				return this.getAtSlot(this.effectState.slot);
+			},
+			onDamagingHit(damage, target, source, move) {
+				if (!source.isAlly(target) && ['Normal', 'Fighting'].includes(move.type)) {
+					this.effectState.slot = source.getSlot();
+					this.effectState.damage = 2 * damage;
+				}
+			},
         },
-        beforeTurnCallback() { },
-        onTry() { },
-        condition: {},
         priority: -1,
         num: 68,
         accuracy: 100,
@@ -3166,15 +3164,17 @@ export const Moves: {[k: string]: ModdedMoveData} = {
         contestType: "Tough"
     },
     curse: {
-        condition: {
-			onStart(pokemon, source) {
-                this.add('-start', pokemon, 'Curse', '[of] ' + source);
-            },
-			onAfterMoveSelf(pokemon) {
-                this.damage(pokemon.baseMaxhp / 4);
-            } 
-		},
         flags: {},
+        type: "???",
+        target: "normal",
+        num: 174,
+        accuracy: true,
+        basePower: 0,
+        category: "Status",
+        name: "Curse",
+        pp: 10,
+        priority: 0,
+        volatileStatus: "curse",
         onModifyMove(move, source, target) {
             if (!source.hasType('Ghost')) {
                 delete move.volatileStatus;
@@ -3187,16 +3187,6 @@ export const Moves: {[k: string]: ModdedMoveData} = {
                 delete move.onHit;
             }
         },
-        type: "???",
-        target: "normal",
-        num: 174,
-        accuracy: true,
-        basePower: 0,
-        category: "Status",
-        name: "Curse",
-        pp: 10,
-        priority: 0,
-        volatileStatus: "curse",
         onTryHit(target, source, move) {
             if (!source.hasType('Ghost')) {
                 delete move.volatileStatus;
@@ -3210,6 +3200,15 @@ export const Moves: {[k: string]: ModdedMoveData} = {
         onHit(target, source) {
             this.directDamage(source.maxhp / 2, source, source);
         },
+        condition: {
+			onStart(pokemon, source) {
+                this.add('-start', pokemon, 'Curse', '[of] ' + source);
+            },
+			onResidualOrder: 12,
+			onResidual(pokemon) {
+				this.damage(pokemon.baseMaxhp / 4);
+			},
+		},
         secondary: null,
         nonGhostTarget: "self",
         zMove: {"effect":"curse"},
@@ -9902,53 +9901,41 @@ export const Moves: {[k: string]: ModdedMoveData} = {
         contestType: "Clever"
     },
     leechseed: {
-        onHit() { },
-        condition: {
+		num: 73,
+		accuracy: 90,
+		basePower: 0,
+		category: "Status",
+		name: "Leech Seed",
+		pp: 10,
+		priority: 0,
+		flags: {protect: 1, reflectable: 1, mirror: 1},
+		volatileStatus: 'leechseed',
+		condition: {
 			onStart(target) {
-                this.add('-start', target, 'move: Leech Seed');
-            },
-			onAfterMoveSelfPriority: 1,
-			onAfterMoveSelf(pokemon) {
-                const leecher = this.getAtSlot(pokemon.volatiles['leechseed'].sourceSlot);
-                if (!leecher || leecher.fainted || leecher.hp <= 0) {
-                    this.debug('Nothing to leech into');
-                    return;
-                }
-                // We check if leeched Pokémon has Toxic to increase leeched damage.
-                let toxicCounter = 1;
-                const residualdmg = pokemon.volatiles['residualdmg'];
-                if (residualdmg) {
-                    residualdmg.counter++;
-                    toxicCounter = residualdmg.counter;
-                }
-                const toLeech = this.clampIntRange(Math.floor(pokemon.baseMaxhp / 16), 1) * toxicCounter;
-                const damage = this.damage(toLeech, pokemon, leecher);
-                if (residualdmg)
-                    this.hint("In Gen 1, Leech Seed's damage is affected by Toxic's counter.", true);
-                if (!damage || toLeech > damage) {
-                    this.hint("In Gen 1, Leech Seed recovery is not limited by the remaining HP of the seeded Pokemon.", true);
-                }
-                this.heal(toLeech, leecher, pokemon);
-            } 
+				this.add('-start', target, 'move: Leech Seed');
+			},
+			onResidualOrder: 8,
+			onResidual(pokemon) {
+				const target = this.getAtSlot(pokemon.volatiles['leechseed'].sourceSlot);
+				if (!target || target.fainted || target.hp <= 0) {
+					this.debug('Nothing to leech into');
+					return;
+				}
+				const damage = this.damage(pokemon.baseMaxhp / 16, pokemon, target);
+				if (damage) {
+					this.heal(damage, target, pokemon);
+				}
+			},
 		},
-        num: 73,
-        accuracy: 90,
-        basePower: 0,
-        category: "Status",
-        name: "Leech Seed",
-        pp: 10,
-        priority: 0,
-        flags: {"protect":1,"reflectable":1,"mirror":1},
-        volatileStatus: "leechseed",
-        onTryImmunity(target) {
-            return !target.hasType('Grass');
-        },
-        secondary: null,
-        target: "normal",
-        type: "Grass",
-        zMove: {"effect":"clearnegativeboost"},
-        contestType: "Clever"
-    },
+		onTryImmunity(target) {
+			return !target.hasType('Grass');
+		},
+		secondary: null,
+		target: "normal",
+		type: "Grass",
+		zMove: {effect: 'clearnegativeboost'},
+		contestType: "Clever",
+	},
     leer: {
         num: 43,
         accuracy: 100,
@@ -16933,7 +16920,7 @@ export const Moves: {[k: string]: ModdedMoveData} = {
                 }
             },
 			onSwitchIn(pokemon) {
-                if (!pokemon.runImmunity('Ground'))
+                if (!pokemon.runImmunity('Ground') || pokemon.hasItem('heavydutyboots'))
                     return;
                 const damageAmounts = [0, 3];
                 this.damage(damageAmounts[this.effectState.layers] * pokemon.maxhp / 24);
@@ -17711,6 +17698,24 @@ export const Moves: {[k: string]: ModdedMoveData} = {
         pp: 10,
         priority: 0,
         volatileStatus: "substitute",
+        onTryHit(target) {
+			if (target.volatiles['substitute']) {
+				this.add('-fail', target, 'move: Substitute');
+				return null;
+			}
+			// We only prevent when hp is less than one quarter.
+			// If you use substitute at exactly one quarter, you faint.
+			if (target.hp < target.maxhp / 4) {
+				this.add('-fail', target, 'move: Substitute', '[weak]');
+				return null;
+			}
+		},
+		onHit(target) {
+			// If max HP is 3 or less substitute makes no damage
+			if (target.maxhp > 3) {
+				this.directDamage(target.maxhp / 4, target, target);
+			}
+		},
         condition: {
 			onStart(target) {
 				this.add('-start', target, 'Substitute');
@@ -17726,7 +17731,7 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 				}
 				if (move.category === 'Status') {
 					// In gen 1 it only blocks:
-					// poison, confusion, secondary effect confusion, stat reducing moves and Leech Seed.
+					// poison, confusion, secondary effect confusion and stat reducing moves.
 					const subBlocked = ['lockon', 'meanlook', 'mindreader', 'nightmare'];
 					if ((move.status && ['psn', 'tox'].includes(move.status)) || (move.boosts && target !== source) ||
 						move.volatileStatus === 'confusion' || subBlocked.includes(move.id)) {
@@ -18717,7 +18722,23 @@ export const Moves: {[k: string]: ModdedMoveData} = {
     },
     thief: {
         onAfterHit() { },
-        secondary: {"chance":100},
+        secondary: {
+			chance: 100,
+			onHit(target, source) {
+				if (source.item || source.volatiles['gem']) {
+					return;
+				}
+				const yourItem = target.takeItem(source);
+				if (!yourItem) {
+					return;
+				}
+				if (!source.setItem(yourItem)) {
+					target.item = yourItem.id; // bypass setItem so we don't break choicelock or anything
+					return;
+				}
+				this.add('-item', source, yourItem, '[from] move: Thief', '[of] ' + target);
+			},
+		},
         basePower: 40,
         pp: 10,
         num: 168,
@@ -19162,7 +19183,7 @@ export const Moves: {[k: string]: ModdedMoveData} = {
                 this.effectState.layers++;
             },
 			onEntryHazard(pokemon) {
-                if (!pokemon.isGrounded())
+                if (!pokemon.isGrounded() || pokemon.hasItem('heavydutyboots'))
                     return;
                 if (pokemon.hasType('Poison')) {
                     this.add('-sideend', pokemon.side, 'move: Toxic Spikes', '[of] ' + pokemon);
