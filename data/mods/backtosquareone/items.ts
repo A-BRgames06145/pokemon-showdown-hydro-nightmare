@@ -57,7 +57,7 @@ export const Items: {[k: string]: ModdedItemData} = {
         gen: 5
     },
     adamantcrystal: {
-        isNonstandard: "Future",
+        isNonstandard: null,
         name: "Adamant Crystal",
         spritenum: 4,
         onBasePowerPriority: 15,
@@ -2252,7 +2252,7 @@ export const Items: {[k: string]: ModdedItemData} = {
         gen: 4
     },
     griseouscore: {
-        isNonstandard: "Future",
+        isNonstandard: null,
         name: "Griseous Core",
         spritenum: 180,
         onBasePowerPriority: 15,
@@ -3129,7 +3129,7 @@ export const Items: {[k: string]: ModdedItemData} = {
         isPokeball: true
     },
     lustrousglobe: {
-        isNonstandard: "Future",
+        isNonstandard: null,
         name: "Lustrous Globe",
         spritenum: 265,
         onBasePowerPriority: 15,
@@ -5332,7 +5332,7 @@ export const Items: {[k: string]: ModdedItemData} = {
         gen: 4
     },
     strangeball: {
-        isNonstandard: "Future",
+        isNonstandard: null,
         name: "Strange Ball",
         spritenum: 308,
         num: 1785,
