@@ -34,7 +34,7 @@ export const Formats: FormatList = [
         ruleset: ['Standard NatDex', 'Dynamax Clause', 'Sleep Clause Mod','Freeze Clause Mod',
 		'Species Clause', 'Moody Clause', 'Evasion Moves Clause', 'OHKO Clause'],
         banlist: ['ND Uber','ND AG','Power Construct','Arena Trap', 'Shadow Tag','Baton Pass', 'Dig',
-		'Fly', 'Last Respects', 'Assist'],
+		'Fly', 'Last Respects', 'Assist', 'Soul Dew'],
         unbanlist: [
         'Baxcalibur','Chien-Pao', 'Dragapult', 'Flutter Mane', 'Gholdengo', 'Kingambit', 'Kyurem-Black',
 		'Melmetal', 'Roaring Moon', 'Spectrier', 'Zygarde', 
